@@ -164,18 +164,74 @@ graph LR
 - **文档更新**：每次修改后及时更新 README，记录变更目的和验证结果。
 - **测试环境**：推荐在独立的虚拟环境（如 `lerobot`）中进行实验，避免影响其他项目。
 
-## 六、🔍遇到的问题及解决
+
+
+## 六、🎬 动态仿真（Rerun）
+# 🎬 Rerun 动态仿真指南
+
+本指南将带你在 Windows 下从零开始使用 [Rerun](https://rerun.io) 加载 URDF 模型，并实现关节正弦运动，最后录制演示视频。
+
+## 📦 1. 安装 Rerun
+
+在已激活的 `lerobot` 环境中执行：
+
+
+conda activate lerobot
+pip install rerun-sdk
+
+rerun --version
+
+使用 Rerun 实现 URDF 模型的实时运动控制，所有旋转关节按照正弦规律运动。
+
+
+## 📁 2. 准备 URDF 文件
+
+确保项目目录（例如 C:\\Users\\asus\\so100_urdf）中包含修正后的 URDF 文件 so100_with_marker.urdf。  
+该文件已修正虚拟连杆的父连杆为 base（而非 base_link）。
+
+## 🐍 3. 编写动态仿真脚本
+
+在项目目录下创建 rerun_demo.py
+
+
+## 🚀 4. 运行动态仿真
+
+### 方式一：自动启动（推荐）
+
+直接运行脚本，Rerun 会自动打开一个窗口：
+
+bash
+
+cd  
+python rerun_demo.py
+
+第一次运行时可能会弹出匿名数据收集提示，按提示选择即可。稍等片刻，Rerun Viewer 窗口将显示机械臂模型，并且各关节开始做正弦运动。
+
+### 方式二：手动启动（如果自动启动失败）
+
+1.  打开一个新的终端（Anaconda Prompt），激活环境，输入 rerun 并回车，保持该终端和 Viewer 窗口打开。
+2.  修改 rerun_demo.py：注释 rr.init(..., spawn=True)，取消 rr.connect_grpc() 的注释。
+3.  在原来的终端中再次运行 python rerun_demo.py，脚本将连接到已打开的 Viewer。
+
+### GIF ![demo](https://github.com/user-attachments/assets/7882aefc-919e-40d3-b98a-866a172d3ad6)
+
+### IMG<img width="1562" height="876" alt="demo" src="https://github.com/user-attachments/assets/ab396d4b-5b26-4600-b9bc-582d595707b7" />
+
+
+
+
+## 七、🔍遇到的问题及解决
 
 
 1. **问题**：Foxglove Studio 无法直接打开 URDF 文件。
-   **解决**：改用 Python 的 `yourdfpy` 库进行结构解析，并通过代码验证模型正确性。
+   **解决**：改用 Python 的 `yourdfpy` 库进行结构解析，并通过代码验证模型正确性。后可通过rerun查看
 
 2. **问题**：URDF 中部分连杆缺少 mesh 文件导致警告。
    **解决**：通过代码过滤警告，专注于关节与连杆的结构信息；同时学习 URDF 对视觉文件的引用机制。
 
 
 
-## 七、总结与后续计划
+## 八、总结与后续计划
 
 - **收获**：掌握了 URDF 中 &lt;joint&gt; 和 &lt;link&gt; 的核心语法，理解了机器人运动学链的表示方法。
 - **后续计划**：
