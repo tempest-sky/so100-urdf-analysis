@@ -1,3 +1,4 @@
+![Python](https://img.shields.io/badge/Python-3.10-blue)![License](https://img.shields.io/badge/License-MIT-green)![Status](https://img.shields.io/badge/Status-Active-brightgreen)![yourdfpy](https://img.shields.io/badge/yourdfpy-0.1.0-orange)![GitHub last commit](https://img.shields.io/github/last-commit/tempest-sky/so100-urdf-analysis)
 # SO-ARM100 机械臂 URDF 结构分析
 
 ## 项目概述
