@@ -56,13 +56,13 @@ URDF 中定义了多个连杆，每个连杆包含视觉、碰撞和惯性信息
 
 | 连杆名称 | 视觉几何 | 碰撞几何 | 惯性质量(kg) |
 | --- | --- | --- | --- |
-| base_link | assets/Base.stl | assets/Base.stl | 1.0|
-|  shoulder_link | assets/Rotation_Pitch.stl | assets/Rotation_Pitch.stl | 0.119226   |
-| upper_arm_link | assets/Upper_Arm.stl | assets/Upper_Arm.stl |  0.162409  |
-| lower_arm_link   | assets/Lower_Arm.stl  | assets/Lower_Arm.stl   | 0.147968   |
-| wrist_link   | assets/Wrist_Pitch_Roll.stl  | assets/Wrist_Pitch_Roll.stl  | 0.0661321   |
-|gripper_link   | assets/Fixed_Jaw.stl  | 无碰撞几何  |  0.0929859   |
-|jaw_link   | assets/Moving_Jaw.stl  | 无碰撞几何  |  0.0202444   |
+| base_link | assets/Base.stl | assets/Base.stl | 1.000|
+|  shoulder_link | assets/Rotation_Pitch.stl | assets/Rotation_Pitch.stl | 0.119   |
+| upper_arm_link | assets/Upper_Arm.stl | assets/Upper_Arm.stl |  0.162  |
+| lower_arm_link   | assets/Lower_Arm.stl  | assets/Lower_Arm.stl   | 0.148   |
+| wrist_link   | assets/Wrist_Pitch_Roll.stl  | assets/Wrist_Pitch_Roll.stl  | 0.066   |
+|gripper_link   | assets/Fixed_Jaw.stl  | 无碰撞几何  |  0.093   |
+|jaw_link   | assets/Moving_Jaw.stl  | 无碰撞几何  |  0.020   |
 ### 补充：缺少 mesh 文件的影响
 
 - 未下载 assets/ 文件夹，Python 加载时出现 Unable to resolve filename 警告，但关节信息依然完整。
@@ -121,41 +121,42 @@ gripper -->|gripper| jaw
 
 **1、零位姿态**（所有关节角度为0）：
 - 位置：`(0.1775, 0.0925, -0.0000)` m
-- 旋转矩阵： 
-  $$
-\begin{bmatrix}
-6.33\times10^{-6} & 3.350\times10^{-1} & -9.422\times10^{-1} \\
-0                 & 9.422\times10^{-1} &  3.350\times10^{-1} \\
-1.00              & -2.12\times10^{-6} &  5.96\times10^{-6}
-\end{bmatrix} 
+- 旋转矩阵：
+
+| 列1 | 列2 | 列3 |
+| --- | --- | --- |
+| 6.33×10⁻⁶ | 3.350×10⁻¹ | -9.422×10⁻¹ |
+| 0 | 9.422×10⁻¹ | 3.350×10⁻¹ |
+| 1.00 | -2.12×10⁻⁶ | 5.96×10⁻⁶ |
 
 - 数值精简：
-  $$
-\begin{bmatrix}
-0.0000 & 0.3350 & -0.9422 \\
-0      & 0.9422 &  0.3350 \\
-1.0000 & 0.0000 &  0.0000
-\end{bmatrix}  
+
+| 列1 | 列2 | 列3 |
+| --- | --- | --- |
+| 0 | 0.3350 | -0.9422 |
+| 0 | 0.9422 | 0.3350 |
+| 1.00 | 0 | 0 |
 
 > 该矩阵描述了末端坐标系在基座坐标系下的方向。第三列 (-0.942, 0.335, 0) 近似为 Z 轴方向，与机械臂水平伸展时的姿态预期一致。
 
  **2、非零姿态**（`shoulder_lift=0.5 rad`）：
 - 位置：`(0.1758, 0.0227, -0.0000)` m
 - 旋转矩阵：
-  $$
-\begin{bmatrix}
-6.33\times10^{-6} & 0.7457 & -0.6663 \\
-0                 & 0.6663 &  0.7457 \\
-1.00              & -4.72\times10^{-6} & 4.22\times10^{-6}
-\end{bmatrix}  
+
+| 列1 | 列2 | 列3 |
+| --- | --- | --- |
+| 6.33×10⁻⁶ | 0.7457 | -0.6663 |
+| 0 | 0.6663 | 0.7457 |
+| 1.00 | -4.72×10⁻⁶ | 4.22×10⁻⁶ |
 
 - 数值精简：
-$$
-\begin{bmatrix}
-0.0000 & 0.7457 & -0.6663 \\
-0      & 0.6663 &  0.7457 \\
-1.0000 & 0.0000 &  0.0000
-\end{bmatrix}
+
+| 列1 | 列2 | 列3 |
+| --- | --- | --- |
+| 0 | 0.7457 | -0.6663 |
+| 0 | 0.6663 | 0.7453 |
+| 1.00 | 0 | 0 |
+
 
 >该矩阵描述了末端坐标系在基座坐标系下的方向。当肩关节抬起 0.5 rad 时，末端 Z 轴方向从零位时的 (-0.942, 0.335, 0) 变为 (-0.666, 0.746, 0)，反映了末端指向的变化。
 
