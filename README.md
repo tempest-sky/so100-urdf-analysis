@@ -1,4 +1,4 @@
-![Python](https://img.shields.io/badge/Python-3.10-blue)![License](https://img.shields.io/badge/License-MIT-green)   ![Status](https://img.shields.io/badge/Status-Active-brightgreen)   ![yourdfpy](https://img.shields.io/badge/yourdfpy-0.1.0-orange)   ![GitHub last commit](https://img.shields.io/github/last-commit/tempest-sky/so100-urdf-analysis)
+![Python](https://img.shields.io/badge/Python-3.10-blue)  ![License](https://img.shields.io/badge/License-MIT-green)  ![Status](https://img.shields.io/badge/Status-Active-brightgreen)   ![yourdfpy](https://img.shields.io/badge/yourdfpy-0.1.0-orange)  ![GitHub last commit](https://img.shields.io/github/last-commit/tempest-sky/so100-urdf-analysis)
 # SO-ARM100 机械臂 URDF 结构分析
 
 ## 项目概述
@@ -68,23 +68,22 @@ URDF 中定义了多个连杆，每个连杆包含视觉、碰撞和惯性信息
 - 未下载 assets/ 文件夹，Python 加载时出现 Unable to resolve filename 警告，但关节信息依然完整。
 - 如果需要完整可视化，可下载整个仓库并保持相对路径一致。
 
+
 ## 四、运动学链结构
 
-机械臂的运动学链可以简化为以下顺序（从基座到末端）：
 
+机械臂的运动学链可以简化为以下顺序（从基座到末端）：
+```mermaid
 graph LR
-    base -->|shoulder_pan| shoulder
-    shoulder -->|shoulder_lift| upper_arm
-    upper_arm -->|elbow_flex| lower_arm
-    lower_arm -->|wrist_flex| wrist
-    wrist -->|wrist_roll| gripper
-    gripper -->|gripper| jaw
+base -->|shoulder_pan| shoulder
+shoulder -->|shoulder_lift| upper_arm
+upper_arm -->|elbow_flex| lower_arm
+lower_arm -->|wrist_flex| wrist
+wrist -->|wrist_roll| gripper
+gripper -->|gripper| jaw
+```
 
 ## 五、实践尝试：修改关节参数
-
-### 尝试 1：修改连杆颜色（需可视化支持）
-
-## 💡 实践尝试
 
 ### 1️⃣ 修改关节限位
 - 将 `shoulder_pan` 关节的 `upper` 限位从 `2.0 rad` 改为 `1.0 rad`。
@@ -97,7 +96,7 @@ graph LR
 - **结果**：成功修改，证明了对 `<limit>` 标签的理解正确。
 - **延伸思考**：如果限位设置过小，会导致机械臂无法到达某些工作空间位置。
 
-### 🎨 修改连杆颜色
+### 🎨2、 修改连杆颜色
 - **目标**：理解 URDF 中视觉材质的定义方式，将 `base_link` 的视觉颜色改为红色。
 - **操作**：在 URDF 的 `<visual>` 中将 `<color rgba="0.7 0.7 0.7 1.0"/>` 修改为 `"1.0 0.0 0.0 1.0"`。
 - **验证**：重新加载 URDF，通过 Python 打印颜色值确认修改成功；若拥有 mesh 文件，可在 Foxglove 中直观看到变化。
@@ -120,19 +119,47 @@ graph LR
 
 使用 `yourdfpy` 编写脚本 `fk_test.py`，给定关节角度，计算末端执行器（`gripper`）相对于基座（`base`）的位置和姿态。
 
-**零位姿态**（所有关节角度为0）：
+**1、零位姿态**（所有关节角度为0）：
 - 位置：`(0.1775, 0.0925, -0.0000)` m
-- 旋转矩阵：[[ 6.32679490e-06  3.34976228e-01 -9.42226579e-01]
- [ 0.00000000e+00  9.42226579e-01  3.34976228e-01]
- [ 1.00000000e+00 -2.11932589e-06  5.96127431e-06]]
+- 旋转矩阵： 
+  $$
+\begin{bmatrix}
+6.33\times10^{-6} & 3.350\times10^{-1} & -9.422\times10^{-1} \\
+0                 & 9.422\times10^{-1} &  3.350\times10^{-1} \\
+1.00              & -2.12\times10^{-6} &  5.96\times10^{-6}
+\end{bmatrix} 
 
-**非零姿态**（`shoulder_lift=0.5 rad`）：
+- 数值精简：
+  $$
+\begin{bmatrix}
+0.0000 & 0.3350 & -0.9422 \\
+0      & 0.9422 &  0.3350 \\
+1.0000 & 0.0000 &  0.0000
+\end{bmatrix}  
+
+> 该矩阵描述了末端坐标系在基座坐标系下的方向。第三列 (-0.942, 0.335, 0) 近似为 Z 轴方向，与机械臂水平伸展时的姿态预期一致。
+
+ **2、非零姿态**（`shoulder_lift=0.5 rad`）：
 - 位置：`(0.1758, 0.0227, -0.0000)` m
-- 旋转矩阵：[[ 6.32679490e-06  7.45696781e-01 -6.66285457e-01]
- [ 0.00000000e+00  6.66285457e-01  7.45696781e-01]
- [ 1.00000000e+00 -4.71787059e-06  4.21545143e-06]]
+- 旋转矩阵：
+  $$
+\begin{bmatrix}
+6.33\times10^{-6} & 0.7457 & -0.6663 \\
+0                 & 0.6663 &  0.7457 \\
+1.00              & -4.72\times10^{-6} & 4.22\times10^{-6}
+\end{bmatrix}  
 
-**结论**：末端位姿随关节角度变化符合运动学规律，验证了 URDF 模型的正确性。该脚本可为后续轨迹规划提供基础。
+- 数值精简：
+$$
+\begin{bmatrix}
+0.0000 & 0.7457 & -0.6663 \\
+0      & 0.6663 &  0.7457 \\
+1.0000 & 0.0000 &  0.0000
+\end{bmatrix}
+
+>该矩阵描述了末端坐标系在基座坐标系下的方向。当肩关节抬起 0.5 rad 时，末端 Z 轴方向从零位时的 (-0.942, 0.335, 0) 变为 (-0.666, 0.746, 0)，反映了末端指向的变化。
+
+**3、结论**：末端位姿随关节角度变化符合运动学规律，验证了 URDF 模型的正确性。该脚本可为后续轨迹规划提供基础。
 ### 5. LeRobot 仿真运动
 - **目标**：动态改变关节角度，模拟末端轨迹。
 - **实现**：编写循环，生成正弦运动，实时打印末端位置。
@@ -215,7 +242,7 @@ python rerun_demo.py
 
 ### GIF ![demo](https://github.com/user-attachments/assets/7882aefc-919e-40d3-b98a-866a172d3ad6)
 
-### IMG<img width="1562" height="876" alt="demo" src="https://github.com/user-attachments/assets/ab396d4b-5b26-4600-b9bc-582d595707b7" />
+### IMG<img width="1562" height="876" alt="demo" src="https://bgithub.xyz/user-attachments/assets/ab396d4b-5b26-4600-b9bc-582d595707b7" />
 
 
 
