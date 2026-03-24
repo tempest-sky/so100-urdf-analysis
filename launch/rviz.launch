@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- RViz 启动文件 -->
+  
+  <!-- 加载机器人描述 -->
+  <param name="robot_description" 
+         command="$(find xacro)/xacro '$(find so100_urdf)/urdf/so100_gazebo.urdf'"/>
+  
+  <!-- 启动 joint_state_publisher_gui 用于手动控制关节 -->
+  <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui"/>
+  
+  <!-- 启动 robot_state_publisher -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+    <param name="publish_frequency" type="double" value="50.0"/>
+  </node>
+  
+  <!-- 启动 RViz -->
+  <node name="rviz" pkg="rviz" type="rviz" 
+        args="-d $(find so100_urdf)/rviz/robot.rviz"
+        output="screen"/>
+</launch>
